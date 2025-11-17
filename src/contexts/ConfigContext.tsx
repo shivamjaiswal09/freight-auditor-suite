@@ -22,8 +22,8 @@ const initialConfigs: FreightConfig[] = [
     allowPartialMatch: true,
     autoApprove: true,
     requireManualReview: false,
-    allowedDomains: "@dhl.com, @vrl.in",
-    acceptedEmails: "transport@dhl.com"
+    allowedSenderDomains: "@dhl.com, @vrl.in",
+    acceptedSenderEmails: "transport@dhl.com"
   },
   {
     id: "2",
