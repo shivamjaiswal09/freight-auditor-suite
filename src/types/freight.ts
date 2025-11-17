@@ -36,7 +36,10 @@ export interface Trip {
 
 export interface AuditSummary {
   totalTrips: number;
+  exactMatchCount: number;
   baseFreightDifferences: number;
   additionalChargesDifferences: number;
   totalDifference: number;
+  baseDiffAmount: number;
+  additionalDiffAmount: number;
 }

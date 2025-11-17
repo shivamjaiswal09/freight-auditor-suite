@@ -76,6 +76,8 @@ export const AuditPage = () => {
   };
 
   const calculateSummary = (): AuditSummary => {
+    const exactMatch = trips.filter(t => t.status === "Match").length;
+    
     const baseFreightDiff = trips.filter(
       t => t.status === "Mismatch - Base" || t.status === "Mismatch - Both"
     ).length;
@@ -83,6 +85,14 @@ export const AuditPage = () => {
     const chargesDiff = trips.filter(
       t => t.status === "Mismatch - Charges" || t.status === "Mismatch - Both"
     ).length;
+
+    const baseDiffAmount = trips
+      .filter(t => t.status === "Mismatch - Base" || t.status === "Mismatch - Both")
+      .reduce((sum, trip) => sum + (trip.invoiceBaseFreight - trip.proformaBaseFreight), 0);
+
+    const additionalDiffAmount = trips
+      .filter(t => t.status === "Mismatch - Charges" || t.status === "Mismatch - Both")
+      .reduce((sum, trip) => sum + (trip.invoiceAdditionalCharges - trip.proformaAdditionalCharges), 0);
 
     const totalDiff = trips.reduce((sum, trip) => {
       return sum + 
@@ -92,9 +102,12 @@ export const AuditPage = () => {
 
     return {
       totalTrips: trips.length,
+      exactMatchCount: exactMatch,
       baseFreightDifferences: baseFreightDiff,
       additionalChargesDifferences: chargesDiff,
       totalDifference: totalDiff,
+      baseDiffAmount,
+      additionalDiffAmount,
     };
   };
 
