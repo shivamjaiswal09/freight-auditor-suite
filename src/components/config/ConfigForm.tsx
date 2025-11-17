@@ -45,8 +45,8 @@ export const ConfigForm = ({ editConfig, onEditComplete }: ConfigFormProps) => {
     allowPartialMatch: false,
     autoApprove: false,
     requireManualReview: false,
-    allowedDomains: "",
-    acceptedEmails: "",
+    allowedSenderDomains: "",
+    acceptedSenderEmails: "",
   });
 
   useEffect(() => {
@@ -71,8 +71,8 @@ export const ConfigForm = ({ editConfig, onEditComplete }: ConfigFormProps) => {
       allowPartialMatch: formData.allowPartialMatch || false,
       autoApprove: formData.autoApprove || false,
       requireManualReview: formData.requireManualReview || false,
-      allowedDomains: formData.allowedDomains,
-      acceptedEmails: formData.acceptedEmails,
+      allowedSenderDomains: formData.allowedSenderDomains,
+      acceptedSenderEmails: formData.acceptedSenderEmails,
     };
 
     if (editConfig) {
@@ -97,8 +97,8 @@ export const ConfigForm = ({ editConfig, onEditComplete }: ConfigFormProps) => {
       allowPartialMatch: false,
       autoApprove: false,
       requireManualReview: false,
-      allowedDomains: "",
-      acceptedEmails: "",
+      allowedSenderDomains: "",
+      acceptedSenderEmails: "",
     });
   };
 
@@ -273,8 +273,8 @@ export const ConfigForm = ({ editConfig, onEditComplete }: ConfigFormProps) => {
             <Input
               id="domains"
               placeholder="@dhl.com, @vrll.in"
-              value={formData.allowedDomains}
-              onChange={(e) => setFormData({ ...formData, allowedDomains: e.target.value })}
+              value={formData.allowedSenderDomains}
+              onChange={(e) => setFormData({ ...formData, allowedSenderDomains: e.target.value })}
             />
           </div>
 
@@ -283,8 +283,8 @@ export const ConfigForm = ({ editConfig, onEditComplete }: ConfigFormProps) => {
             <Input
               id="emails"
               placeholder="transport@company.com, billing@company.com"
-              value={formData.acceptedEmails}
-              onChange={(e) => setFormData({ ...formData, acceptedEmails: e.target.value })}
+              value={formData.acceptedSenderEmails}
+              onChange={(e) => setFormData({ ...formData, acceptedSenderEmails: e.target.value })}
             />
           </div>
         </div>

@@ -2,46 +2,64 @@ import { useState } from "react";
 import { FilterBar } from "@/components/audit/FilterBar";
 import { UploadCard } from "@/components/audit/UploadCard";
 import { ProcessingLoader } from "@/components/audit/ProcessingLoader";
-import { SummaryView } from "@/components/audit/SummaryView";
+import { SummaryPanel } from "@/components/audit/SummaryPanel";
 import { TripTable } from "@/components/audit/TripTable";
-import { Trip, AuditSummary } from "@/types/freight";
+import { Trip, AuditSummary, Charge } from "@/types/freight";
+import { Button } from "@/components/ui/button";
 
-// Mock data
+// Mock data with detailed charges
+const mockCharges: Charge[] = [
+  { id: "c1", type: "Base Freight", contractedAmount: 50000, invoiceAmount: 52000, variance: 2000 },
+  { id: "c2", type: "Toll Charges", contractedAmount: 2000, invoiceAmount: 2200, variance: 200 },
+  { id: "c3", type: "Detention Charges", contractedAmount: 1500, invoiceAmount: 1500, variance: 0 },
+  { id: "c4", type: "Unloading Charges", contractedAmount: 1500, invoiceAmount: 1800, variance: 300 },
+];
+
 const mockTrips: Trip[] = [
   {
     id: "1",
     tripId: "TRP-001",
     lrNumber: "LR-2024-0001",
+    vehicleNumber: "MH-12-AB-1234",
     origin: "Mumbai",
     destination: "Delhi",
     proformaBaseFreight: 50000,
     invoiceBaseFreight: 52000,
     proformaAdditionalCharges: 5000,
     invoiceAdditionalCharges: 5500,
+    proformaGST: 9900,
+    invoiceGST: 10350,
     status: "Mismatch - Both",
+    charges: mockCharges,
   },
   {
     id: "2",
     tripId: "TRP-002",
     lrNumber: "LR-2024-0002",
+    vehicleNumber: "DL-01-XY-5678",
     origin: "Delhi",
     destination: "Bangalore",
     proformaBaseFreight: 45000,
     invoiceBaseFreight: 45000,
     proformaAdditionalCharges: 4500,
     invoiceAdditionalCharges: 4500,
+    proformaGST: 8910,
+    invoiceGST: 8910,
     status: "Match",
   },
   {
     id: "3",
     tripId: "TRP-003",
     lrNumber: "LR-2024-0003",
+    vehicleNumber: "KA-03-CD-9012",
     origin: "Bangalore",
     destination: "Chennai",
     proformaBaseFreight: 30000,
     invoiceBaseFreight: 32000,
     proformaAdditionalCharges: 3000,
     invoiceAdditionalCharges: 3000,
+    proformaGST: 5940,
+    invoiceGST: 6300,
     status: "Mismatch - Base",
   },
 ];
@@ -114,7 +132,7 @@ export const AuditPage = () => {
   const canUpload = client && branch && transporter;
 
   return (
-    <div className="container mx-auto px-6 py-8 space-y-8">
+    <div className="min-h-screen bg-muted/30">
       <FilterBar
         client={client}
         branch={branch}
@@ -122,33 +140,43 @@ export const AuditPage = () => {
         onClientChange={setClient}
         onBranchChange={setBranch}
         onTransporterChange={setTransporter}
+        showUploadButton={canUpload && state === "filters"}
+        onUploadClick={() => setState("upload")}
       />
 
-      {canUpload && state === "filters" && (
-        <UploadCard onProcess={handleProcess} />
-      )}
+      <div className="container mx-auto px-6 py-8 space-y-6">
+        {canUpload && state === "filters" && (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground text-lg">
+              Select client, branch, and transporter to begin, then upload an invoice
+            </p>
+          </div>
+        )}
 
-      {state === "upload" && (
-        <UploadCard onProcess={handleProcess} />
-      )}
+        {state === "upload" && <UploadCard onProcess={handleProcess} />}
 
-      {state === "processing" && <ProcessingLoader />}
+        {state === "processing" && <ProcessingLoader />}
 
-      {(state === "summary" || state === "review") && (
-        <>
-          <SummaryView
-            summary={calculateSummary()}
-            fileName={fileName}
-            onReviewTrips={handleReviewTrips}
-          />
+        {(state === "summary" || state === "review") && (
+          <>
+            <SummaryPanel summary={calculateSummary()} />
 
-          {state === "review" && (
-            <div id="trips-table">
-              <TripTable trips={trips} onTripsUpdate={setTrips} />
-            </div>
-          )}
-        </>
-      )}
+            {state === "summary" && (
+              <div className="flex justify-center">
+                <Button onClick={handleReviewTrips} size="lg" className="px-8">
+                  Review Trips
+                </Button>
+              </div>
+            )}
+
+            {state === "review" && (
+              <div id="trips-table">
+                <TripTable trips={trips} onTripsUpdate={setTrips} />
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
